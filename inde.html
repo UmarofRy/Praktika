@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Manzilni Aniqlash</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1>IP Manzilni Aniqlash</h1>
+        <div id="info">
+            <p><strong>IP Manzil:</strong> <span id="ip">Yuklanmoqda...</span></p>
+            <p><strong>Shahar:</strong> <span id="city">Yuklanmoqda...</span></p>
+            <p><strong>Davlat:</strong> <span id="country">Yuklanmoqda...</span></p>
+            <p><strong>Internet provayder:</strong> <span id="isp">Yuklanmoqda...</span></p>
+        </div>
+        <div id="map"></div>
+    </div>
+
+    <script>
+        async function getIPInfo() {
+            try {
+                const response = await fetch('https://ipinfo.io/json?token=6fb5efc5ec8fc7');
+                if (!response.ok) {
+                    throw new Error(`HTTP xatolik: ${response.status}`);
+                }
+                const data = await response.json();
+
+                document.getElementById('ip').textContent = data.ip || "Noma'lum";
+                document.getElementById('city').textContent = data.city || "Noma'lum";
+                document.getElementById('country').textContent = data.country || "Noma'lum";
+                document.getElementById('isp').textContent = data.org || "Noma'lum";
+
+                if (data.loc) {
+                    const [lat, lon] = data.loc.split(",");
+                    const mapFrame = `<iframe 
+                        width="100%" 
+                        height="300" 
+                        frameborder="0" 
+                        style="border:0" 
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q=${lat},${lon}&output=embed">
+                    </iframe>`;
+                    document.getElementById('map').innerHTML = mapFrame;
+                } else {
+                    document.getElementById('map').innerHTML = "Xarita ma'lumotlari yuklanmadi.";
+                }
+            } catch (error) {
+                document.getElementById('info').innerHTML = "<p>Xatolik yuz berdi. Iltimos, qayta urinib ko'ring.</p>";
+                console.error("Ma'lumotni olishda xatolik yuz berdi", error);
+            }
+        }
+        getIPInfo();
+    </script>
+</body>
+
+</html>
